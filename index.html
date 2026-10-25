@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yerel Hedef & Alışkanlık Takibi</title>
+  <title>Kişisel Alışkanlık & Hedef Takibi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -20,32 +20,34 @@
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-500/30">
-          <i class="fa-solid fa-shield-halved text-xl"></i>
+          <i class="fa-solid fa-calendar-check text-xl"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight">Gizli & Yerel Hedef Takibi</h1>
+          <h1 class="font-bold text-lg leading-tight">Gelişim & Alışkanlık Takibi</h1>
           <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
             <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-            %100 İnternetsiz & Çevrimdışı Analiz
+            %100 Yerel Veri & Gizli
           </p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
+        <button onclick="requestNotificationPermission()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300" title="Günlük Hatırlatıcı Aç">
+          <i class="fa-solid fa-bell"></i>
+        </button>
         <button id="togglePrivacyBtn" onclick="togglePrivacy()" class="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2">
           <i id="privacyIcon" class="fa-solid fa-eye-slash"></i>
-          <span id="privacyText" class="hidden sm:inline">Metinleri Gizle</span>
+          <span id="privacyText" class="hidden sm:inline">Gizle</span>
         </button>
-        <button onclick="exportData()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300" title="Verileri İndir / Yedeği Al">
+        <button onclick="exportData()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300" title="Verileri İndir">
           <i class="fa-solid fa-download"></i>
         </button>
         <label class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer" title="Veri Yükle">
           <i class="fa-solid fa-upload"></i>
           <input type="file" id="importFile" onchange="importData(event)" class="hidden" accept=".json">
         </label>
-        <button onclick="toggleDarkMode()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
-          <i class="fa-solid fa-moon dark:hidden"></i>
-          <i class="fa-solid fa-sun hidden dark:block"></i>
+        <button onclick="resetWeek()" class="px-3 py-2 text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-800 hover:bg-amber-500/20 transition" title="Yeni Haftaya Başla (Arşive Kaydet)">
+          <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">Haftayı Arşivle & Sıfırla</span>
         </button>
       </div>
     </div>
@@ -59,10 +61,10 @@
       <!-- Yüzdelik Kart -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
         <div>
-          <span class="text-xs font-semibold tracking-wider uppercase text-slate-400">Haftalık Tamamlama</span>
+          <span class="text-xs font-semibold tracking-wider uppercase text-slate-400">Bu Haftanın Tamamlama Oranı</span>
           <div class="mt-2 flex items-baseline gap-2">
             <span id="percentageText" class="text-5xl font-extrabold text-indigo-600 dark:text-indigo-400">0%</span>
-            <span id="ratioText" class="text-sm text-slate-500 font-medium">(0/0 Hedef)</span>
+            <span id="ratioText" class="text-sm text-slate-500 font-medium">(0/0 Günlük İlerleme)</span>
           </div>
         </div>
         
@@ -80,11 +82,11 @@
           <div class="space-y-2 text-sm">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <span>Tamamlanan: <strong id="completedCount">0</strong></span>
+              <span>Tamamlanan: <strong id="completedDaysCount">0</strong></span>
             </div>
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-              <span>Devam Eden: <strong id="pendingCount">0</strong></span>
+              <span>Kalan Gün: <strong id="pendingDaysCount">0</strong></span>
             </div>
           </div>
         </div>
@@ -93,20 +95,20 @@
         </div>
       </div>
 
-      <!-- Yerel Yapay Zeka Koçu -->
+      <!-- Akıllı Değerlendirme Koçu -->
       <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col justify-between relative overflow-hidden">
         <div class="relative z-10">
           <div class="flex items-center gap-2 mb-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider">
-            <i class="fa-solid fa-microchip"></i>
-            <span>Cihaz İçi Akıllı Koç</span>
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Haftalık Koç Analizi</span>
           </div>
           <p id="aiRecommendation" class="text-sm leading-relaxed text-slate-200 italic">
-            "Hedeflerinizi ekleyin veya tamamladıkça güncelleyin. Size özel tavsiyeler burada anlık üretilecek."
+            "Günlük hedeflerinizi ekleyin ve her gün yaptıkça ilgili günün üzerine tıklayın!"
           </p>
         </div>
         <div class="mt-4 pt-3 border-t border-indigo-800/60 flex justify-between items-center text-xs text-indigo-300 relative z-10">
-          <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-emerald-400"></i> Verileriniz dışarı çıkmaz</span>
-          <button onclick="updateAIAdvice()" class="underline hover:text-white transition">Yenile</button>
+          <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-emerald-400"></i> Yerel & Gizli Analiz</span>
+          <button onclick="updateAdvice()" class="underline hover:text-white transition">Güncelle</button>
         </div>
       </div>
     </div>
@@ -114,7 +116,7 @@
     <!-- Hedef Ekleme Formu -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
       <form id="goalForm" onsubmit="addGoal(event)" class="flex flex-col sm:flex-row gap-3">
-        <input type="text" id="goalTitle" placeholder="Haftalık yeni hedefiniz (Örn: 3 gün spor yap, 50 sayfa kitap oku...)" required 
+        <input type="text" id="goalTitle" placeholder="Alışkanlık başlığı (Örn: Her gün 20 sayfa kitap oku)" required 
           class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
         
         <select id="goalCategory" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -126,7 +128,7 @@
 
         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl text-sm transition shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2">
           <i class="fa-solid fa-plus"></i>
-          <span>Ekle</span>
+          <span>Hedef Ekle</span>
         </button>
       </form>
     </div>
@@ -134,15 +136,21 @@
     <!-- Hedef Listesi -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700/60">
-        <h2 class="font-bold text-base">Haftalık Hedef Takibi</h2>
-        <div class="flex gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl text-xs font-medium">
-          <button onclick="filterGoals('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm">Tümü</button>
-          <button onclick="filterGoals('pending')" id="filter-pending" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Devam Eden</button>
-          <button onclick="filterGoals('completed')" id="filter-completed" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Tamamlanan</button>
-        </div>
+        <h2 class="font-bold text-base">Haftalık Alışkanlık & Günlük Takip Listesi</h2>
       </div>
 
-      <div id="goalsContainer" class="space-y-3">
+      <div id="goalsContainer" class="space-y-4">
+        <!-- JS ile Dolacak -->
+      </div>
+    </div>
+
+    <!-- Geçmiş Haftalar Arşivi -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-4">
+      <h2 class="font-bold text-base flex items-center gap-2">
+        <i class="fa-solid fa-box-archive text-indigo-500"></i>
+        <span>Geçmiş Haftalar Arşivi</span>
+      </h2>
+      <div id="archiveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         <!-- JS ile Dolacak -->
       </div>
     </div>
@@ -150,17 +158,20 @@
   </main>
 
   <script>
-    let goals = JSON.parse(localStorage.getItem('my_private_goals')) || [
-      { id: 1, title: 'Haftada en az 3 gün yürüyüş/egzersiz yap', category: 'Sağlık / Spor', completed: false, createdAt: new Date() },
-      { id: 2, title: 'Haftalık planlama ve öz değerlendirme yap', category: 'Gelişim', completed: true, createdAt: new Date() }
+    const daysName = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+
+    let goals = JSON.parse(localStorage.getItem('my_daily_habits_v2')) || [
+      { id: 1, title: 'Her gün 20 sayfa kitap oku', category: 'Gelişim', days: [true, true, false, false, false, false, false], streak: 3, note: 'Şu an 45. sayfadayım' },
+      { id: 2, title: 'Günde 2 litre su iç', category: 'Sağlık / Spor', days: [true, true, true, false, false, false, false], streak: 5, note: '' }
     ];
 
-    let currentFilter = 'all';
+    let historyArchive = JSON.parse(localStorage.getItem('my_habit_archive')) || [];
     let isPrivacyActive = false;
     let chartInstance = null;
 
     function saveGoals() {
-      localStorage.setItem('my_private_goals', JSON.stringify(goals));
+      localStorage.setItem('my_daily_habits_v2', JSON.stringify(goals));
+      localStorage.setItem('my_habit_archive', JSON.stringify(historyArchive));
       render();
     }
 
@@ -173,8 +184,9 @@
         id: Date.now(),
         title: titleInput.value.trim(),
         category: categoryInput.value,
-        completed: false,
-        createdAt: new Date()
+        days: [false, false, false, false, false, false, false],
+        streak: 0,
+        note: ''
       };
 
       goals.unshift(newGoal);
@@ -182,27 +194,59 @@
       saveGoals();
     }
 
-    function toggleGoal(id) {
-      goals = goals.map(g => g.id === id ? { ...g, completed: !g.completed } : g);
+    function toggleDay(goalId, dayIndex) {
+      goals = goals.map(g => {
+        if(g.id === goalId) {
+          const newDays = [...g.days];
+          newDays[dayIndex] = !newDays[dayIndex];
+          
+          // Seri hesaplama basit güncelleme
+          let currentStreak = g.streak || 0;
+          if(newDays[dayIndex]) {
+            currentStreak += 1;
+          } else {
+            currentStreak = Math.max(0, currentStreak - 1);
+          }
+
+          return { ...g, days: newDays, streak: currentStreak };
+        }
+        return g;
+      });
       saveGoals();
+    }
+
+    function updateNote(goalId, newNote) {
+      goals = goals.map(g => g.id === goalId ? { ...g, note: newNote } : g);
+      localStorage.setItem('my_daily_habits_v2', JSON.stringify(goals));
     }
 
     function deleteGoal(id) {
-      goals = goals.filter(g => g.id !== id);
-      saveGoals();
+      if(confirm('Bu hedefi silmek istediğinize emin misiniz?')) {
+        goals = goals.filter(g => g.id !== id);
+        saveGoals();
+      }
     }
 
-    function filterGoals(type) {
-      currentFilter = type;
-      ['all', 'pending', 'completed'].forEach(f => {
-        const btn = document.getElementById(`filter-${f}`);
-        if(f === type) {
-          btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-semibold";
-        } else {
-          btn.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200";
-        }
-      });
-      render();
+    function resetWeek() {
+      if(goals.length === 0) return;
+
+      if(confirm('Mevcut haftanın başarısı geçmiş arşive kaydedilecek ve işaretlemeler yeni hafta için temizlenecek. Onaylıyor musunuz?')) {
+        const totalPossibleDays = goals.length * 7;
+        let totalCompletedDays = 0;
+        goals.forEach(g => totalCompletedDays += g.days.filter(Boolean).length);
+        const percent = Math.round((totalCompletedDays / totalPossibleDays) * 100);
+
+        const archiveItem = {
+          date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }),
+          percent: percent,
+          completedDays: totalCompletedDays,
+          totalDays: totalPossibleDays
+        };
+
+        historyArchive.unshift(archiveItem);
+        goals = goals.map(g => ({ ...g, days: [false, false, false, false, false, false, false] }));
+        saveGoals();
+      }
     }
 
     function togglePrivacy() {
@@ -211,40 +255,55 @@
       const icon = document.getElementById('privacyIcon');
       
       if(isPrivacyActive) {
-        textSpan.innerText = "Metinleri Göster";
+        textSpan.innerText = "Göster";
         icon.className = "fa-solid fa-eye";
       } else {
-        textSpan.innerText = "Metinleri Gizle";
+        textSpan.innerText = "Gizle";
         icon.className = "fa-solid fa-eye-slash";
       }
       render();
     }
 
-    function toggleDarkMode() {
-      document.documentElement.classList.toggle('dark');
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            alert('Hatırlatıcılar aktif edildi! Akşamları hatırlatma bildirimi alacaksınız.');
+          } else {
+            alert('Bildirim izni verilmedi.');
+          }
+        });
+      } else {
+        alert('Tarayıcınız bildirim özelliğini desteklemiyor.');
+      }
     }
 
-    function updateAIAdvice() {
-      const total = goals.length;
-      if (total === 0) {
-        document.getElementById('aiRecommendation').innerText = '"Harika bir hafta geçirmek için ilk hedefinizi ekleyerek başlayın!"';
+    function updateAdvice() {
+      let totalPossibleDays = goals.length * 7;
+      let totalCompletedDays = 0;
+
+      goals.forEach(g => {
+        totalCompletedDays += g.days.filter(Boolean).length;
+      });
+
+      if (totalPossibleDays === 0) {
+        document.getElementById('aiRecommendation').innerText = '"Harika bir hafta geçirmek için ilk günlük alışkanlığınızı ekleyerek başlayın!"';
         return;
       }
 
-      const completed = goals.filter(g => g.completed).length;
-      const ratio = completed / total;
+      const ratio = totalCompletedDays / totalPossibleDays;
 
       let advice = "";
       if (ratio === 1) {
-        advice = "🎉 Harika iş çıkardınız! Bütün haftalık hedeflerinizi tamamladınız. Kendinizi ödüllendirin ve yeni hedefler belirleyin.";
-      } else if (ratio >= 0.7) {
-        advice = "🚀 Çok iyi gidiyorsunuz! Hedeflerinizin çoğunu başardınız. Kalan son birkaç adımı tamamlamak için odağınızı koruyun.";
+        advice = "🏆 Mükemmel bir hafta! Belirlediğiniz tüm alışkanlıkları kesintisiz uyguladınız. Harika disiplin!";
+      } else if (ratio >= 0.75) {
+        advice = "🚀 Harika gidiyorsunuz! Günlük hedeflerinizin büyük kısmını tamamladınız. Disiplininizi koruyun.";
       } else if (ratio >= 0.4) {
-        advice = "⚖️ Dengeli bir ilerleme. Haftanın yarısına ulaştınız. Tamamlanmamış kritik bir hedefe öncelik vererek ivmenizi artırın.";
-      } else if (completed > 0) {
-        advice = "🌱 İlk adımları attınız! Kalan hedefleri gözünüzde büyütmeyin, bugün sadece tek bir küçük adımı bitirmeye odaklanın.";
+        advice = "⚖️ İyi bir tempodasınız. Eksik kalan günleri tamamlamak için bugün odağınızı artırın.";
+      } else if (totalCompletedDays > 0) {
+        advice = "🌱 İlerleme kaydediyorsunuz. Bugün yeni bir gün ve kutucuğu işaretlemek sizin elinizde!";
       } else {
-        advice = "⏳ Henüz tamamlanmış hedefiniz yok. Unutmayın, en zor kısım başlamaktır. Listeden en kolay görünen bir tanesini seçip bitirin!";
+        advice = "⏳ Bu hafta henüz işaretleme yapmadınız. Bugün hemen ilk adımı atıp bugünün kutucuğunu yeşile çevirin!";
       }
 
       document.getElementById('aiRecommendation').innerText = `"${advice}"`;
@@ -254,51 +313,99 @@
       const container = document.getElementById('goalsContainer');
       container.innerHTML = '';
 
-      let filtered = goals;
-      if(currentFilter === 'pending') filtered = goals.filter(g => !g.completed);
-      if(currentFilter === 'completed') filtered = goals.filter(g => g.completed);
-
-      if(filtered.length === 0) {
+      if(goals.length === 0) {
         container.innerHTML = `<p class="text-center py-6 text-slate-400 text-sm">Gösterilecek hedef bulunamadı.</p>`;
       } else {
-        filtered.forEach(goal => {
+        goals.forEach(goal => {
+          const completedCount = goal.days.filter(Boolean).length;
+          const percentage = Math.round((completedCount / 7) * 100);
+
           const item = document.createElement('div');
-          item.className = `flex items-center justify-between p-4 rounded-xl border transition ${goal.completed ? 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 opacity-75' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm'}`;
+          item.className = "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm space-y-3";
 
           const privacyClass = isPrivacyActive ? 'blurred-text select-none' : '';
 
-          item.innerHTML = `
-            <div class="flex items-center gap-3 flex-1 min-w-0 pr-2">
-              <button onclick="toggleGoal(${goal.id})" class="text-xl transition">
-                <i class="${goal.completed ? 'fa-solid fa-circle-check text-emerald-500' : 'fa-regular fa-circle text-slate-400'}"></i>
+          let daysHtml = daysName.map((day, idx) => {
+            const isDone = goal.days[idx];
+            return `
+              <button onclick="toggleDay(${goal.id}, ${idx})" 
+                class="flex-1 py-2 rounded-lg text-xs font-semibold transition flex flex-col items-center justify-center gap-1 ${isDone ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600'}">
+                <span>${day}</span>
+                <i class="${isDone ? 'fa-solid fa-check text-sm' : 'fa-regular fa-circle text-[10px]'}"></i>
               </button>
+            `;
+          }).join('');
+
+          item.innerHTML = `
+            <div class="flex items-center justify-between gap-2">
               <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium ${goal.completed ? 'line-through text-slate-400' : ''} ${privacyClass} truncate">${goal.title}</p>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 font-medium">${goal.category}</span>
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-semibold ${privacyClass} truncate">${goal.title}</p>
+                  <span class="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-2 py-0.5 rounded-full flex items-center gap-1" title="Kesintisiz Seri">
+                    <i class="fa-solid fa-fire"></i> ${goal.streak || 0} Gün
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 font-medium">${goal.category}</span>
+                  <span class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">${completedCount}/7 Gün (%${percentage})</span>
+                </div>
               </div>
+              <button onclick="deleteGoal(${goal.id})" class="text-slate-400 hover:text-rose-500 p-1.5 transition">
+                <i class="fa-solid fa-trash-can text-sm"></i>
+              </button>
             </div>
-            <button onclick="deleteGoal(${goal.id})" class="text-slate-400 hover:text-rose-500 p-2 transition">
-              <i class="fa-solid fa-trash-can text-sm"></i>
-            </button>
+
+            <!-- 7 Gün Kutucukları -->
+            <div class="flex gap-1.5 pt-1">
+              ${daysHtml}
+            </div>
+
+            <!-- Günlük Not Alanı -->
+            <div class="pt-1">
+              <input type="text" value="${goal.note || ''}" onchange="updateNote(${goal.id}, this.value)" placeholder="Bu hedef için kısa not ekleyin..." 
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 ${privacyClass}">
+            </div>
           `;
           container.appendChild(item);
         });
       }
 
+      // Arşiv Kutuları
+      const archiveContainer = document.getElementById('archiveContainer');
+      archiveContainer.innerHTML = '';
+      if(historyArchive.length === 0) {
+        archiveContainer.innerHTML = `<p class="text-xs text-slate-400 col-span-full">Henüz tamamlanıp arşive kaldırılmış bir hafta yok.</p>`;
+      } else {
+        historyArchive.forEach(arch => {
+          const archDiv = document.createElement('div');
+          archDiv.className = "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl flex justify-between items-center";
+          archDiv.innerHTML = `
+            <div>
+              <p class="text-xs font-semibold text-slate-500">${arch.date}</p>
+              <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400">%${arch.percent} Başarı</p>
+            </div>
+            <span class="text-xs text-slate-400">(${arch.completedDays}/${arch.totalDays} Gün)</span>
+          `;
+          archiveContainer.appendChild(archDiv);
+        });
+      }
+
       // İstatistikler
-      const total = goals.length;
-      const completed = goals.filter(g => g.completed).length;
-      const pending = total - completed;
-      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+      const totalPossibleDays = goals.length * 7;
+      let totalCompletedDays = 0;
+      goals.forEach(g => totalCompletedDays += g.days.filter(Boolean).length);
 
-      document.getElementById('percentageText').innerText = `${percent}%`;
-      document.getElementById('ratioText').innerText = `(${completed}/${total} Hedef)`;
-      document.getElementById('progressBar').style.width = `${percent}%`;
-      document.getElementById('completedCount').innerText = completed;
-      document.getElementById('pendingCount').innerText = pending;
+      const pendingDays = totalPossibleDays - totalCompletedDays;
+      const overallPercent = totalPossibleDays > 0 ? Math.round((totalCompletedDays / totalPossibleDays) * 100) : 0;
 
-      updateAIAdvice();
-      renderChart(completed, pending);
+      document.getElementById('percentageText').innerText = `${overallPercent}%`;
+      document.getElementById('ratioText').innerText = `(${totalCompletedDays}/${totalPossibleDays} Gün)`;
+      document.getElementById('progressBar').style.width = `${overallPercent}%`;
+      document.getElementById('completedDaysCount').innerText = totalCompletedDays;
+      document.getElementById('pendingDaysCount').innerText = pendingDays;
+
+      updateAdvice();
+      renderChart(totalCompletedDays, pendingDays);
     }
 
     function renderChart(completed, pending) {
@@ -308,7 +415,7 @@
       chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['Tamamlanan', 'Devam Eden'],
+          labels: ['Yapılan Günler', 'Kalan Günler'],
           datasets: [{
             data: [completed, pending],
             backgroundColor: ['#10b981', '#f59e0b'],
@@ -325,10 +432,11 @@
     }
 
     function exportData() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(goals));
+      const exportObj = { goals, historyArchive };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `hedef_yedek_${new Date().toISOString().slice(0,10)}.json`);
+      downloadAnchor.setAttribute("download", `hedef_tam_yedek_${new Date().toISOString().slice(0,10)}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -339,11 +447,14 @@
       fileReader.onload = function(e) {
         try {
           const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
+          if (imported.goals) {
+            goals = imported.goals;
+            historyArchive = imported.historyArchive || [];
+          } else if (Array.isArray(imported)) {
             goals = imported;
-            saveGoals();
-            alert("Yedek başarıyla yüklendi!");
           }
+          saveGoals();
+          alert("Yedek başarıyla yüklendi!");
         } catch(err) {
           alert("Geçersiz dosya formatı!");
         }
